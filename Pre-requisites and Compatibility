@@ -1,0 +1,12 @@
+# Pre-requisites and Compatibility
+
+## Version Compatibility
+Ensure your application versions natively support Istio Gateway before proceeding with the upgrade.
+
+## Cluster Configuration (One-time Setup)
+1. **Cluster Addons:** 
+   - Install `istio` and `gatewayapi` cluster addons.
+   - Verify that the `istio-system` and `gatewayapi-system` namespaces exist and are running.
+2. **Network Policies:** 
+   - Update your network policies to the latest version.
+   - Ensure specific policies (such as those allowing external traffic to dedicated Istio gateways) are applied in your customer namespaces.
