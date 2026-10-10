@@ -1,0 +1,27 @@
+# Key Behavior Changes in Gateway Mode
+
+While NGINX configurations are mapped to Gateway configurations wherever possible, note the following important behavioral differences:
+
+### 1. TLS Configuration
+* **Protocols:** SSL/TLS protocols are automatically translated into minimum and maximum Gateway version settings.
+* **Ciphers:** SSL ciphers are mapped to Istio-supported options. Unsupported ciphers are automatically dropped with a warning.
+* **FIPS Limitation:** Deployed FIPS-compliant Istio Envoy proxy images typically support limited secure ciphers (e.g., ECDHE with AES128/SHA256 or AES256/SHA384).
+
+### 2. Forwarded Headers
+* When forwarded headers are enabled, the trusted proxy count automatically adjusts (e.g., minimum of 1). Disabling it sets the count to 0.
+
+### 3. Resource Sizing
+* The Gateway typically inherits your existing custom sizing rules. Otherwise, requests and limits derive from standard ingress size templates.
+* *Performance:* Istio Gateway generally requires less memory than Ingress NGINX while maintaining comparable CPU utilization.
+
+### 4. Payload Size Limits (`proxy_body_size`)
+* **Ignored by Design:** Istio Gateway ignores legacy NGINX `proxy_body_size` limitations. 
+* *Reason:* Enforcing strict body size limits directly inside the Istio proxy can make the Gateway more vulnerable to DoS/OOM (Out of Memory) conditions. Rely on application-level or connection-level size limits instead.
+
+### 5. Backend Routing & Proxies
+* **Backend Rewrite:** Ingress backend target URLs automatically transition from legacy NGINX controllers to the new Gateway services during deployment.
+* **Legacy NoSNI Proxies:** Standalone proxy ingresses configured for older, non-SNI-supported devices remain unchanged as standalone components.
+
+### 6. Protocols & Allowlist
+* **HTTP/2:** Allowed inbound at the Gateway level, but proxied internally to backend services using HTTP/1.1.
+* **GlobalIP & Allowlists:** Existing external IP configurations and IP CIDR allowlists continue to function seamlessly without extra changes.
