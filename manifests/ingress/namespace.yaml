@@ -1,0 +1,6 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: lab-ingress
+  labels:
+    environment: migration-baseline

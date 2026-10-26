@@ -1,0 +1,19 @@
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: httpbin-virtualservice
+  namespace: lab-istio
+spec:
+  hosts:
+  - "app.istio.local"
+  gateways:
+  - httpbin-gateway
+  http:
+  - match:
+    - uri:
+        prefix: /
+    route:
+    - destination:
+        host: httpbin.lab-istio.svc.cluster.local
+        port:
+          number: 8000

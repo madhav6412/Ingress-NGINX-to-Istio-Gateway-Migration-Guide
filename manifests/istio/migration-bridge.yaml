@@ -1,0 +1,36 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: istio-ingress-bridge
+  namespace: lab-istio
+spec:
+  type: ExternalName
+  externalName: istio-ingressgateway.istio-system.svc.cluster.local
+  ports:
+  - name: http
+    port: 80
+    targetPort: 80
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: istio-migration-bridge
+  namespace: lab-istio
+  annotations:
+    nginx.ingress.kubernetes.io/service-upstream: "true"
+    nginx.ingress.kubernetes.io/upstream-vhost: "app.istio.local"
+    nginx.ingress.kubernetes.io/configuration-snippet: |
+      proxy_pass_header Server;
+spec:
+  ingressClassName: nginx
+  rules:
+  - host: app.istio.local
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: istio-ingress-bridge
+            port:
+              number: 80
